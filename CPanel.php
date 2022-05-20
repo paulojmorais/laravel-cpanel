@@ -56,7 +56,7 @@ class CPanel {
             'rootdomain'    => $rootdomain,
             'canoff'        => 0,
             'dir'           => $dir,
-            'disallowdot'   => 0
+            'disallowdot'   => 1
         );
         return $this->call($module, $function, $parameters);
     }
@@ -128,7 +128,19 @@ class CPanel {
         return $this->call($module, $function, $parameters);
     }
     //-----------------------------------------------------
-
+     public function createEmailAccount($email,$password,$quota=500, $main_domain = '') {
+        $module = "Email";
+        $function = "add_pop";
+        $parameters = array(
+            'email'    => $email,
+            'password'    => $password,
+            'domain'    => $main_domain,
+            'quota'     => $quota,
+            'skip_update_db' => 1
+        );
+        return $this->call($module, $function, $parameters);
+        
+    }
 
     //-----------------------------------------------------
     public function callUAPI($Module, $function, $parameters_array = array())
