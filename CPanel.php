@@ -186,6 +186,9 @@ class CPanel {
             CURLOPT_HTTPHEADER => $headers,
         ));
 
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
         $curl_res = curl_exec($curl);
         $err = curl_error($curl);
         $err_no = curl_errno($curl);
@@ -203,6 +206,7 @@ class CPanel {
             'curl_response' => $curl_res,
             'curl_response_decoded' => $curl_response_decoded,
             'header_size' => $header_size,
+            'headers' => $headers,
             'header' => $header,
             'body' => $body,
             'error' => $err,
@@ -211,15 +215,29 @@ class CPanel {
 
 
 
-        if ($err || $err_no) {
+        if (!empty($err_no)) {
 
             $response['status'] = 'failed';
-            $response['errors'] = $err;
+            $response['errors'] = [$err];
+            return $response;
 
-        } if(isset($curl_response_decoded->errors) && count($curl_response_decoded->errors) > 0)
+        } if(isset($curl_response_decoded->errors)
+        && count($curl_response_decoded->errors) > 0)
     {
         $response['status'] = 'failed';
-        $response['errors'] = $curl_response_decoded->errors;
+
+        if(is_object($curl_response_decoded->errors))
+        {
+            $curl_response_decoded->errors = (array)$curl_response_decoded->errors;
+        }
+
+        if(is_array($curl_response_decoded->errors))
+        {
+            $response['errors'] = $curl_response_decoded->errors;
+        } else{
+            $response['errors'] = [$curl_response_decoded->errors];
+        }
+        return $response;
 
     } else {
 
