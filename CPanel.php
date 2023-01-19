@@ -244,18 +244,17 @@ class CPanel {
         if(isset($res) && isset($res->status) && $res->status == 0)
         {
             $response['status'] = 'failed';
-            $response['errors'][] = $res->errors;
-            $response['inputs']['url'] = $url;
+            $response['errors'] = [$res->errors];
+            return $response;
         } else
         {
             $response['data'] = json_decode($curl_res);
             $response['status'] = 'success';
-            $response['inputs']['url'] = $url;
+            return $response;
         }
     }
 
 
-        return $response;
     }
 
     //-----------------------------------------------------
